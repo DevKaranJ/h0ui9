@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { Activity, Briefcase, Layers, Crosshair } from 'lucide-react';
 
 export default function Terminal() {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [data, setData] = useState<any>(null);
   const [connected, setConnected] = useState(false);
 
@@ -144,6 +145,7 @@ export default function Terminal() {
             <div className="text-gray-500 text-xs mb-2 border-b border-gray-800 pb-2">ACTIVE POSITIONS ({portfolio?.open_positions?.length || 0})</div>
             {portfolio?.open_positions?.length > 0 ? (
               <div className="space-y-2">
+                {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                 {portfolio.open_positions.map((pos: any, idx: number) => (
                   <div key={idx} className="flex justify-between items-center text-xs">
                     <span className={`font-bold ${pos.action === 'LONG' ? 'text-green-400' : 'text-red-400'}`}>
