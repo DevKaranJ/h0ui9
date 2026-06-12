@@ -34,9 +34,9 @@ export default function Terminal() {
 
   if (!connected) {
     return (
-      <div className="flex items-center justify-center h-screen w-full bg-black">
+      <div className="flex items-center justify-center h-screen w-full bg-black" role="status" aria-live="polite">
         <div className="text-gray-500 animate-pulse flex items-center gap-3 font-mono">
-          <Activity size={20} />
+          <Activity size={20} aria-hidden="true" />
           Connecting to Order Flow Engine...
         </div>
       </div>
@@ -75,7 +75,7 @@ export default function Terminal() {
       {/* Main Data Feed (Footprint) */}
       <div className="col-span-8 row-span-4 terminal-panel flex flex-col">
         <div className="terminal-header flex justify-between items-center">
-          <span className="flex items-center gap-2"><Layers size={16} /> ORDER FLOW / FOOTPRINT (5M)</span>
+          <span className="flex items-center gap-2"><Layers size={16} aria-hidden="true" /> ORDER FLOW / FOOTPRINT (5M)</span>
           <span className="text-green-400 font-bold">{strategy?.current_price ? formatMoney(strategy.current_price) : '---'}</span>
         </div>
 
@@ -125,14 +125,17 @@ export default function Terminal() {
               </tbody>
             </table>
           ) : (
-            <div className="h-full flex items-center justify-center text-gray-600">Awaiting Tick Data...</div>
+            <div className="h-full flex flex-col items-center justify-center text-gray-600 gap-2">
+              <Activity size={24} className="opacity-50" aria-hidden="true" />
+              <span>Awaiting Tick Data...</span>
+            </div>
           )}
         </div>
       </div>
 
       {/* Portfolio & Risk Panel */}
       <div className="col-span-4 row-span-2 terminal-panel flex flex-col">
-        <div className="terminal-header flex items-center gap-2"><Briefcase size={16} /> PORTFOLIO & RISK (PAPER)</div>
+        <div className="terminal-header flex items-center gap-2"><Briefcase size={16} aria-hidden="true" /> PORTFOLIO & RISK (PAPER)</div>
         <div className="flex-1 flex flex-col gap-4">
           <div className="grid grid-cols-2 gap-4">
             <div className="bg-black border border-gray-800 p-3 rounded">
@@ -163,7 +166,10 @@ export default function Terminal() {
                 ))}
               </div>
             ) : (
-              <div className="text-gray-600 text-xs h-full flex items-center justify-center">No active positions</div>
+              <div className="text-gray-600 text-xs h-full flex flex-col items-center justify-center gap-2">
+                <Briefcase size={20} className="opacity-50" aria-hidden="true" />
+                <span>No active positions</span>
+              </div>
             )}
           </div>
         </div>
@@ -171,7 +177,7 @@ export default function Terminal() {
 
       {/* Strategy Metrics Panel */}
       <div className="col-span-4 row-span-2 terminal-panel flex flex-col">
-        <div className="terminal-header flex items-center gap-2"><Crosshair size={16} /> STRATEGY ENGINE</div>
+        <div className="terminal-header flex items-center gap-2"><Crosshair size={16} aria-hidden="true" /> STRATEGY ENGINE</div>
 
         <div className="grid grid-cols-2 gap-3 mb-4">
             <div className="bg-black border border-gray-800 p-3 rounded">
