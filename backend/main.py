@@ -8,11 +8,13 @@ import time
 
 app = FastAPI(title="Crypto Order Flow Terminal API")
 
+# SECURITY: Restrict CORS origins to local frontend dev environments
+# allowing "*" with allow_credentials=True is highly insecure and leads to CSRF/Data leakage
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["http://localhost:3000", "http://127.0.0.1:3000"],
     allow_credentials=True,
-    allow_methods=["*"],
+    allow_methods=["GET", "POST", "OPTIONS"],
     allow_headers=["*"],
 )
 
