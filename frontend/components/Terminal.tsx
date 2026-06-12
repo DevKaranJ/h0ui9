@@ -3,7 +3,12 @@
 import { useEffect, useState } from 'react';
 import { Activity, Briefcase, Layers, Crosshair } from 'lucide-react';
 
+// Cache the expensive Intl.NumberFormat instantiation outside the render loop
+// This improves performance significantly as the terminal re-renders up to 10x/sec
+const moneyFormatter = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' });
+
 export default function Terminal() {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [data, setData] = useState<any>(null);
   const [connected, setConnected] = useState(false);
 
@@ -43,7 +48,7 @@ export default function Terminal() {
   const footprint = data?.footprint;
 
   // Formatting helpers
-  const formatMoney = (val: number) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(val);
+  const formatMoney = (val: number) => moneyFormatter.format(val);
 
   return (
     <div className="p-4 h-screen grid grid-cols-12 grid-rows-6 gap-4 font-mono text-sm">
@@ -144,6 +149,7 @@ export default function Terminal() {
             <div className="text-gray-500 text-xs mb-2 border-b border-gray-800 pb-2">ACTIVE POSITIONS ({portfolio?.open_positions?.length || 0})</div>
             {portfolio?.open_positions?.length > 0 ? (
               <div className="space-y-2">
+                {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                 {portfolio.open_positions.map((pos: any, idx: number) => (
                   <div key={idx} className="flex justify-between items-center text-xs">
                     <span className={`font-bold ${pos.action === 'LONG' ? 'text-green-400' : 'text-red-400'}`}>
