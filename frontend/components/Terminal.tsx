@@ -3,6 +3,9 @@
 import { useEffect, useState } from 'react';
 import { Activity, Briefcase, Layers, Crosshair } from 'lucide-react';
 
+// Cache the formatter outside the component to prevent recreating it on every render (which happens 10x/sec)
+const moneyFormatter = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' });
+
 export default function Terminal() {
   const [data, setData] = useState<any>(null);
   const [connected, setConnected] = useState(false);
@@ -43,7 +46,7 @@ export default function Terminal() {
   const footprint = data?.footprint;
 
   // Formatting helpers
-  const formatMoney = (val: number) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(val);
+  const formatMoney = (val: number) => moneyFormatter.format(val);
 
   return (
     <div className="p-4 h-screen grid grid-cols-12 grid-rows-6 gap-4 font-mono text-sm">
