@@ -8,11 +8,13 @@ import time
 
 app = FastAPI(title="Crypto Order Flow Terminal API")
 
+# SECURITY: Restrict CORS origins to local frontend dev environments
+# allowing "*" with allow_credentials=True is highly insecure and leads to CSRF/Data leakage
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["http://localhost:3000", "http://127.0.0.1:3000"],
     allow_credentials=True,
-    allow_methods=["*"],
+    allow_methods=["GET", "POST", "OPTIONS"],
     allow_headers=["*"],
 )
 
@@ -49,11 +51,16 @@ async def broadcast_state():
             "delta": engine.current_candle.delta
         }
 
+    dead_clients = []
     for client in ws_clients:
         try:
             await client.send_json(state)
         except Exception:
-            pass
+            dead_clients.append(client)
+
+    for dead_client in dead_clients:
+        if dead_client in ws_clients:
+            ws_clients.remove(dead_client)
 
 async def handle_trade_tick(data):
     engine.process_tick(data)
@@ -87,8 +94,11 @@ async def websocket_endpoint(websocket: WebSocket):
     try:
         while True:
             await websocket.receive_text()
-    except WebSocketDisconnect:
-        ws_clients.remove(websocket)
+    except Exception:
+        pass
+    finally:
+        if websocket in ws_clients:
+            ws_clients.remove(websocket)
 
 @app.get("/api/state")
 def get_state():
