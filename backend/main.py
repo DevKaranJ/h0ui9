@@ -51,11 +51,16 @@ async def broadcast_state():
             "delta": engine.current_candle.delta
         }
 
+    dead_clients = []
     for client in ws_clients:
         try:
             await client.send_json(state)
         except Exception:
-            pass
+            dead_clients.append(client)
+
+    for dead_client in dead_clients:
+        if dead_client in ws_clients:
+            ws_clients.remove(dead_client)
 
 async def handle_trade_tick(data):
     engine.process_tick(data)
@@ -89,8 +94,11 @@ async def websocket_endpoint(websocket: WebSocket):
     try:
         while True:
             await websocket.receive_text()
-    except WebSocketDisconnect:
-        ws_clients.remove(websocket)
+    except Exception:
+        pass
+    finally:
+        if websocket in ws_clients:
+            ws_clients.remove(websocket)
 
 @app.get("/api/state")
 def get_state():
