@@ -65,8 +65,13 @@ class PaperPortfolio:
                 if current_price >= p['stop_loss'] or current_price <= p['take_profit']:
                     self.close_position(p, current_price)
 
+        # Performance optimization: Prune closed positions from `self.positions` array
+        # `trades_history` natively handles full historical tracking of closed trades
+        # This prevents an O(N) iteration scaling problem on every single tick
+        self.positions = [p for p in self.positions if p['active']]
+
         # Update Equity
-        active_pnl = sum(p['pnl'] for p in self.positions if p['active'])
+        active_pnl = sum(p['pnl'] for p in self.positions)
         self.equity = self.balance + active_pnl
 
     def close_position(self, position, exit_price):
